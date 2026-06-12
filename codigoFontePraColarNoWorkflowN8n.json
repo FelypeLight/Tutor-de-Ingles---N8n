@@ -1,0 +1,146 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "14bf6134-e50b-4296-9a17-cedc681c8b0e",
+      "name": "When Chat Message Received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -176,
+        32
+      ],
+      "webhookId": "923411ce-3676-41f3-8a6a-750159a0fa51"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Você é um mentor de Business English nível C1. \n\nInstruções:\n1. Receba o texto em inglês do usuário.\n2. Se houver erros, corrija-os.\n3. Reescreva o texto para uma linguagem corporativa (Corporate English) de alto nível.\n4. Explique brevemente em PORTUGUÊS quais termos C1 você usou (phrasal verbs, expressões formais).\n5. Mantenha um tom profissional e encorajador."
+        }
+      },
+      "id": "0d748c1b-ef67-46f0-a3a5-740fbe7c4b25",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "phi3:latest",
+        "options": {}
+      },
+      "id": "27011041-e8ef-44bf-8dde-d3dbc1aafa90",
+      "name": "Ollama Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        96,
+        208
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "9Y8nvezR0T9UOFkd",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        208
+      ],
+      "id": "7a056390-dc2b-4b90-88d6-94f66a7a676a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9eff601a-edb4-4939-9cc4-6ec007c66f4d",
+              "name": "chatInput",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "bcbb1c37-71c1-4225-b45c-512a9b3df797",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        32
+      ],
+      "id": "98664209-5c1d-4ac9-9a6f-f9e196702da5",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "When Chat Message Received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "642dd74c1087bdc46268f6182a34dfe8840f2591db683df4d321287daca2590b"
+  }
+}
